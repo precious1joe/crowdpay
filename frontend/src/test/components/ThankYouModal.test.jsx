@@ -11,6 +11,25 @@ vi.mock('../../services/api', () => ({
   },
 }));
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key, options) => {
+      const map = {
+        'thankYou.bulkTitle': 'Send Bulk Thank You',
+        'thankYou.individualTitle': 'Send Thank You to Contributor',
+        'thankYou.bulkDescription': 'Thank all contributors',
+        'thankYou.individualDescription': `Thank ${options?.name || 'contributor'}`,
+        'thankYou.placeholder': 'Write your thank you message...',
+        'thankYou.charactersLeft': 'characters left',
+        'thankYou.send': 'Send',
+        'thankYou.sendError': 'Failed to send thank you message',
+        'common.cancel': 'Cancel',
+      };
+      return map[key] || key;
+    },
+  }),
+}));
+
 describe('ThankYouModal', () => {
   const mockOnClose = vi.fn();
   const mockOnSent = vi.fn();
@@ -30,12 +49,12 @@ describe('ThankYouModal', () => {
       />
     );
 
-    expect(screen.getByText('thankYou.bulkTitle')).toBeDefined();
+    expect(screen.getByText('Send Bulk Thank You')).toBeDefined();
 
     const textarea = screen.getByRole('textbox');
     fireEvent.change(textarea, { target: { value: 'Thank you all!' } });
 
-    const submitButton = screen.getByRole('button', { name: /thankYou/i });
+    const submitButton = screen.getByRole('button', { name: 'Send' });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -59,12 +78,12 @@ describe('ThankYouModal', () => {
       />
     );
 
-    expect(screen.getByText('thankYou.individualTitle')).toBeDefined();
+    expect(screen.getByText('Send Thank You to Contributor')).toBeDefined();
 
     const textarea = screen.getByRole('textbox');
     fireEvent.change(textarea, { target: { value: 'Thanks Alice!' } });
 
-    const submitButton = screen.getByRole('button', { name: /thankYou/i });
+    const submitButton = screen.getByRole('button', { name: 'Send' });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -88,7 +107,7 @@ describe('ThankYouModal', () => {
     const textarea = screen.getByRole('textbox');
     fireEvent.change(textarea, { target: { value: 'Thank you!' } });
 
-    const submitButton = screen.getByRole('button', { name: /thankYou/i });
+    const submitButton = screen.getByRole('button', { name: 'Send' });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
